@@ -1,1 +1,1 @@
-# activity-creater-kde
+# Activity-Creater-KDE
