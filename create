@@ -1,0 +1,41 @@
+#!/usr/bin/zsh 
+activity=$(<scripts/Activity/created.txt)
+activites=()
+count=0
+setopt shwordsplit
+for i in $activity; do
+	activites+=$i
+	count=$(($count+1))
+done
+unsetopt shwordsplit
+if [ $count -eq 0 ]
+then   
+	count=$(($count+1)) 
+	name="e$count"
+	a=$(qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.AddActivity $name);
+	activites+="$a" 
+	qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.SetCurrentActivity $a
+	
+else
+	c=$(zenity --title "Activity" --text "Enter activity number:" --entry);
+	c=$c[29]
+	echo "c $c"
+	echo "count $count"
+	if [ $c -gt $count ]
+	then 
+		echo "test"
+		count=$(($count+1))
+		name="e$count"
+		a=$(qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.AddActivity $name);
+		activites+="$a"
+	else
+		echo "test2"
+		echo $activites[c]
+		a=$activites[c]
+	fi
+	qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.SetCurrentActivity $a;
+
+fi
+
+echo "$activites" > "scripts/Activity/created.txt"
+
