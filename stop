@@ -1,0 +1,27 @@
+#!/usr/bin/zsh 
+ca=$(qdbus org.kde.ActivityManager /ActivityManager/Activities CurrentActivity)
+a9="80673118-39c0-4c17-87e2-8da4b79df80c"
+a11="43bb1ac8-793a-479b-b7d7-d52a3248d7ff"
+activity=$(<scripts/Activity/created.txt)
+if [ $ca = $a9 ] || [ $ca = $a11 ] #9th activity or 11th
+then
+	qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.SetActivityDescription $ca off
+fi
+activites=()
+d=0
+setopt shwordsplit  
+for i in $activity; do
+	if [ $ca = $i ]
+	then
+		d=1
+		xdotool key Meta + Tab;sleep 0.5;qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.RemoveActivity $ca
+	else
+		activites+="$i" 
+	fi		
+done
+unsetopt shwordsplit
+echo "$activites" > "scripts/Activity/created.txt"
+if [ $d -eq 0 ] 
+then
+xdotool key Meta + Tab;sleep 0.5;qdbus org.kde.ActivityManager /ActivityManager/Activities org.kde.ActivityManager.Activities.StopActivity $ca;
+fi
